@@ -1,7 +1,7 @@
 package com.example.netdisk.controller;
 
 import com.example.netdisk.entity.User;
-import com.example.netdisk.mapper.UserMapper;
+import com.example.netdisk.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +29,9 @@ public class UserController {
      * UserController 需要用到 UserMapper
      * 不是手动new一个，而是由Spring注入
      */
-    private final UserMapper userMapper;
+//    private final UserMapper userMapper;
+
+    private final UserService userService;
 
     /**
      * 构造器注入（而非@Autowired）
@@ -42,8 +44,18 @@ public class UserController {
      *
      * @param userMapper
      */
-    public  UserController(UserMapper userMapper) {
-        this.userMapper = userMapper;
+//    public  UserController(UserMapper userMapper) {
+//        this.userMapper = userMapper;
+//    }
+
+    /**
+     * Controller：构造器注入 Service
+     * Service：构造器注入 Mapper
+     *
+     * @param userService
+     */
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -56,7 +68,8 @@ public class UserController {
      */
     @GetMapping("/test/users")
     public List<User> listUsers() {
-        return userMapper.findAll();
+//        return userMapper.findAll();
+        return userService.listUsers();
     }
 
 }
