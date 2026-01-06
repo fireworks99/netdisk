@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * 用户管理
+ *
  * @RestController = @Controller + @ResponseBody
  *
  * @Controller: 标记一个类作为 Spring MVC 控制器
@@ -59,6 +61,8 @@ public class UserController {
     }
 
     /**
+     * 查询所有用户
+     *
      * 因为有@RestController
      * Spring把 List<User> 转成 JSON
      * 并设置Content-Type: application/json

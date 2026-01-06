@@ -1,0 +1,66 @@
+# ================================
+# 应用基础配置
+# ================================
+server:
+  # 应用服务 WEB 访问端口
+  port: 8080
+
+
+# ================================
+# 数据源配置（MySQL）
+# ================================
+spring:
+  datasource:
+    # 数据库连接地址
+    url: jdbc:mysql://localhost:3306/netdisk?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    # 数据库用户名
+    username: root
+    # 数据库密码
+    password: 123456
+    # MySQL 8.x 驱动
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+  # ================================
+  # 项目启动时的 SQL 初始化配置
+  # ================================
+  sql:
+    init:
+      # 启动项目后是否执行 SQL 脚本
+      # always：每次启动都执行
+      # never：不执行
+      mode: always
+
+      # 建表语句位置
+      schema-locations: classpath:sql/schema.sql
+
+      # 预置数据脚本（目前暂不启用）
+      # data-locations: classpath:sql/data.sql
+
+      # SQL 文件编码
+      encoding: UTF-8
+
+
+# ================================
+# MyBatis 配置
+# ================================
+mybatis:
+  # Mapper XML 文件扫描路径
+  # 之前报错：
+  # Invalid bound statement (not found): com.example.netdisk.mapper.UserMapper.findAll
+  # 原因：mapper-locations 配置错误（原来是 mappers）
+  mapper-locations: classpath:mapper/*xml
+
+  # 实体类别名扫描包
+  type-aliases-package: com.example.netdisk.entity
+
+
+# ================================
+# 文件上传相关配置
+# ================================
+file:
+  upload:
+    # 文件上传基础路径
+    # 本地开发示例：D:/NetDisk
+    # Linux 服务器示例：/data/netdisk
+    base-path: D:/NetDisk

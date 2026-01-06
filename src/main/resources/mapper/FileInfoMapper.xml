@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.netdisk.mapper.FileInfoMapper">
+
+    <insert id="insert" parameterType="com.example.netdisk.entity.FileInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into file_info
+            (original_name, storage_name, storage_path, file_size, content_type)
+        VALUES
+            (#{originalName}, #{storageName}, #{storagePath}, #{fileSize}, #{contentType})
+    </insert>
+
+</mapper>
