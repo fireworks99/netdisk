@@ -4,6 +4,25 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @SpringBootApplication = @SpringBootConfiguration + @EnableAutoConfiguration + @ComponentScan
+ * @SpringBootConfiguration
+ * @EnableAutoConfiguration
+ * @ComponentScan：没写 basePackages，意味着默认扫描“当前类所在包 + 所有子包”
+ *
+ * Spring启动过程：
+ * 1. 找到启动类 NetdiskApplication
+ * 2. 读取 @SpringBootApplication
+ * 3. 发现其中包含 @ComponentScan
+ * 4. 扫描包：com.example.netdisk 及其子包
+ * 5. 扫描到：
+ *    - @RestController
+ *    - @Controller
+ *    - @Service
+ *    - @Component
+ *    - @Configuration
+ * 6. 把这些类注册为 Bean
+ */
 @SpringBootApplication
 
 /**
