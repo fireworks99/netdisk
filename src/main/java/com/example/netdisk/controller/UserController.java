@@ -1,8 +1,10 @@
 package com.example.netdisk.controller;
 
+import com.example.netdisk.common.Result;
 import com.example.netdisk.entity.User;
 import com.example.netdisk.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
  *
  */
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     /**
@@ -46,9 +49,9 @@ public class UserController {
      *
      * @param userMapper
      */
-//    public  UserController(UserMapper userMapper) {
-//        this.userMapper = userMapper;
-//    }
+    //    public  UserController(UserMapper userMapper) {
+    //        this.userMapper = userMapper;
+    //    }
 
     /**
      * Controller：构造器注入 Service
@@ -70,10 +73,10 @@ public class UserController {
      * @GetMapping("/test/users")等价于：
      * @RequestMapping(value="/test/users",method=RequestMethod.GET)
      */
-    @GetMapping("/test/users")
-    public List<User> listUsers() {
+    @GetMapping
+    public Result<List<User>> listUsers() {
 //        return userMapper.findAll();
-        return userService.listUsers();
+        return Result.success(userService.listUsers());
     }
 
 }

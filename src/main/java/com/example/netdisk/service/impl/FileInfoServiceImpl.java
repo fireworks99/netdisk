@@ -2,6 +2,7 @@ package com.example.netdisk.service.impl;
 
 import com.example.netdisk.config.FileUploadProperties;
 import com.example.netdisk.entity.FileInfo;
+import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.mapper.FileInfoMapper;
 import com.example.netdisk.service.FileInfoService;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     public FileInfo upload(MultipartFile file) {
 
         if(file.isEmpty()) {
-            throw new RuntimeException("文件不能为空");
+//            throw new RuntimeException("文件不能为空");
+            throw new BusinessException(400, "文件不能为空");
         }
 
         String originalName = file.getOriginalFilename();
@@ -48,7 +50,8 @@ public class FileInfoServiceImpl implements FileInfoService {
         try {
             file.transferTo(dest);
         } catch (IOException e) {
-            throw new RuntimeException("文件保存失败", e);
+//            throw new RuntimeException("文件保存失败", e);
+            throw new BusinessException(500, "文件保存失败");
         }
 
         FileInfo fileInfo = new FileInfo();
@@ -72,7 +75,8 @@ public class FileInfoServiceImpl implements FileInfoService {
     public FileInfo getById(Long id) {
         FileInfo fileInfo = fileInfoMapper.findById(id);
         if(fileInfo == null) {
-            throw new RuntimeException("文件不存在");
+//            throw new RuntimeException("文件不存在");
+            throw new BusinessException(404, "文件不存在");
         }
         return fileInfo;
     }
