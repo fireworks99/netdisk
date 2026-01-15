@@ -64,3 +64,10 @@ file:
     # 本地开发示例：D:/NetDisk
     # Linux 服务器示例：/data/netdisk
     base-path: D:/NetDisk
+
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: netdisk

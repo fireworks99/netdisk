@@ -79,6 +79,7 @@ public class FileInfoController {
             fileName = fileInfo.getOriginalName();
         }
 
+        //文件流（binary）和 JSON 不能在一个响应体里同时返回，所以这里放在header中
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData("attachment", fileName);

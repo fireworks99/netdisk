@@ -13,6 +13,7 @@ public class CrosConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("*")       // Spring Boot 2.4+ 推荐
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .exposedHeaders("Content-Disposition") //暴露响应头，前端才能在headers中拿到文件名
                 .allowCredentials(true)
                 .maxAge(3600);
     }
