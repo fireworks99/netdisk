@@ -1,20 +1,13 @@
 package com.example.netdisk.controller;
 
 import com.example.netdisk.common.Result;
+import com.example.netdisk.dto.FileInfo.UploadUrlRequest;
+import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.entity.FileInfo;
 import com.example.netdisk.service.FileInfoService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import com.example.netdisk.service.MinioService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -25,21 +18,52 @@ import java.util.List;
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
+    private final MinioService minioService;
 
-    public FileInfoController(FileInfoService fileInfoService) {
+    public FileInfoController(FileInfoService fileInfoService,
+                              MinioService minioService) {
         this.fileInfoService = fileInfoService;
+        this.minioService = minioService;
     }
 
     /**
-     * 上传文件
-     *
-     * @param file
-     * @return
+     * 获取 MinIO 预签名上传 URL（前端直传）
      */
-    @PostMapping("/upload")
-    public Result<FileInfo> upload(@RequestParam("file")MultipartFile file) {
-        FileInfo fileInfo = fileInfoService.upload(file);
-        return Result.success(fileInfo);
+    @PostMapping("/upload-url")
+    public Result<UploadUrlResponse> getUploadUrl(
+            @RequestBody UploadUrlRequest request) throws Exception {
+
+        // TODO 后续从登录态获取
+        Long userId = 1L;
+
+        String objectKey = minioService.buildObjectName(
+                userId,
+                request.getOriginalName()
+        );
+
+        String uploadUrl = minioService.getUploadUrl(
+                objectKey,
+                request.getContentType()
+        );
+
+        return Result.success(
+                new UploadUrlResponse(uploadUrl, objectKey)
+        );
+    }
+
+    /**
+     * 前端上传成功后，保存文件信息
+     */
+    @PostMapping("/save")
+    public Result<FileInfo> saveFileInfo(
+            @RequestBody FileInfo fileInfo) {
+
+        // TODO 设置用户ID
+        fileInfo.setUploaderId(1L);
+
+        return Result.success(
+                fileInfoService.saveFileInfo(fileInfo)
+        );
     }
 
     /**
@@ -51,40 +75,18 @@ public class FileInfoController {
     }
 
     /**
-     * 下载文件
+     * 获取文件访问 URL（下载 / 预览通用）
      */
-    @GetMapping("/{id}/download")
-    public ResponseEntity<StreamingResponseBody> download(@PathVariable Long id) throws Exception {
+    @GetMapping("/{id}/url")
+    public Result<String> getFileUrl(@PathVariable Long id) {
+
         FileInfo fileInfo = fileInfoService.getById(id);
 
-        File file = new File(fileInfo.getStoragePath());
-        if(!file.exists()) {
-            throw new RuntimeException("文件不存在");
-        }
+        String url = minioService.getPreviewUrl(
+                fileInfo.getObjectKey(),
+                fileInfo.getContentType()
+        );
 
-        StreamingResponseBody stream = outputStream -> {
-            try (InputStream inputStream = new FileInputStream(file)){
-                byte[] buffer = new byte[8192];// 8KB缓冲区
-                int len;
-                while ((len = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, len);// 分块写入
-                }
-            }
-        };
-
-        String fileName;
-        try {
-            fileName = URLEncoder.encode(fileInfo.getOriginalName(), StandardCharsets.UTF_8.name());
-        } catch (Exception e) {
-            fileName = fileInfo.getOriginalName();
-        }
-
-        //文件流（binary）和 JSON 不能在一个响应体里同时返回，所以这里放在header中
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", fileName);
-
-        return ResponseEntity.ok().headers(headers).body(stream);
+        return Result.success(url);
     }
-
 }

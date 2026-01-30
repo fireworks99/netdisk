@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface FileInfoService {
 
-    FileInfo upload(MultipartFile multipartFile);
+    String generateUploadUrl(String originalName, String contentType);
+
+    FileInfo saveFileInfo(FileInfo fileInfo);
 
     List<FileInfo> listFiles();
 

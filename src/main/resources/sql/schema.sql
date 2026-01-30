@@ -10,11 +10,15 @@ CREATE TABLE IF NOT EXISTS users (
 -- 文件信息表
 CREATE TABLE IF NOT EXISTS file_info (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    original_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
-    storage_name VARCHAR(255) NOT NULL COMMENT '磁盘存储名',
-    storage_path VARCHAR(500) NOT NULL COMMENT '磁盘路径',
-    file_size BIGINT NOT NULL COMMENT '文件大小（字节）',
-    content_type VARCHAR(100) COMMENT '文件类型',
+    original_name VARCHAR(255),
+    bucket_name VARCHAR(100),
+    object_key VARCHAR(500),
+    file_size BIGINT,
+    content_type VARCHAR(100),
+    file_ext VARCHAR(20),
+    uploader_id BIGINT,
+    etag VARCHAR(64),
+    is_public TINYINT(1),
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -1,30 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.example.netdisk.mapper.FileInfoMapper">
 
+    <!-- ==================== ResultMap ==================== -->
     <resultMap id="FileInfoMap" type="com.example.netdisk.entity.FileInfo">
-        <id column="id" property="id"/>
-        <result column="original_name" property="originalName"/>
-        <result column="storage_name" property="storageName"/>
-        <result column="storage_path" property="storagePath"/>
-        <result column="file_size" property="fileSize"/>
-        <result column="content_type" property="contentType"/>
-        <result column="create_time" property="createTime"/>
+        <id     column="id"             property="id"/>
+        <result column="original_name"  property="originalName"/>
+        <result column="bucket_name"    property="bucketName"/>
+        <result column="object_key"     property="objectKey"/>
+        <result column="file_size"      property="fileSize"/>
+        <result column="content_type"   property="contentType"/>
+        <result column="file_ext"       property="fileExt"/>
+        <result column="uploader_id"    property="uploaderId"/>
+        <result column="etag"           property="etag"/>
+        <result column="is_public"      property="isPublic"/>
+        <result column="create_time"    property="createTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.example.netdisk.entity.FileInfo" useGeneratedKeys="true" keyProperty="id">
-        insert into file_info
-            (original_name, storage_name, storage_path, file_size, content_type)
-        VALUES
-            (#{originalName}, #{storageName}, #{storagePath}, #{fileSize}, #{contentType})
+    <!-- ==================== Insert ==================== -->
+    <insert id="insert"
+            parameterType="com.example.netdisk.entity.FileInfo"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO file_info (
+            original_name,
+            bucket_name,
+            object_key,
+            file_size,
+            content_type,
+            file_ext,
+            uploader_id,
+            etag,
+            is_public,
+            create_time
+        ) VALUES (
+                     #{originalName},
+                     #{bucketName},
+                     #{objectKey},
+                     #{fileSize},
+                     #{contentType},
+                     #{fileExt},
+                     #{uploaderId},
+                     #{etag},
+                     #{isPublic},
+                     NOW()
+                 )
     </insert>
 
+    <!-- ==================== Query ==================== -->
     <select id="findAll" resultMap="FileInfoMap">
-        SELECT * FROM file_info ORDER BY create_time DESC
+        SELECT *
+        FROM file_info
+        ORDER BY create_time DESC
     </select>
 
     <select id="findById" resultMap="FileInfoMap">
-        SELECT * FROM file_info WHERE id = #{id}
+        SELECT *
+        FROM file_info
+        WHERE id = #{id}
     </select>
 
 </mapper>

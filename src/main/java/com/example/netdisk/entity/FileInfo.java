@@ -1,69 +1,43 @@
 package com.example.netdisk.entity;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 public class FileInfo {
+
+    /** 主键 */
     private Long id;
+
+    /** 原始文件名（用户看到的） */
     private String originalName;
-    private String storageName;
-    private String storagePath;
+
+    /** MinIO bucket （核心之一：minio://bucketName/objectKey）*/
+    private String bucketName;
+
+    /** 对象名（MinIO objectKey / objectName）（核心之一：minio://bucketName/objectKey） */
+    private String objectKey;
+
+    /** 文件大小（字节） */
     private Long fileSize;
+
+    /** MIME 类型 */
     private String contentType;
+
+    /** 文件后缀 */
+    private String fileExt;
+
+    /** 上传者（可选） */
+    private Long uploaderId;
+
+    /** MinIO 返回的 etag（可用于校验） */
+    private String etag;
+
+    /** 是否公开访问（public / private） */
+    private Boolean isPublic;
+
+    /** 创建时间 */
     private LocalDateTime createTime;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getOriginalName() {
-        return originalName;
-    }
-
-    public void setOriginalName(String originalName) {
-        this.originalName = originalName;
-    }
-
-    public String getStorageName() {
-        return storageName;
-    }
-
-    public void setStorageName(String storageName) {
-        this.storageName = storageName;
-    }
-
-    public String getStoragePath() {
-        return storagePath;
-    }
-
-    public void setStoragePath(String storagePath) {
-        this.storagePath = storagePath;
-    }
-
-    public Long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
 }

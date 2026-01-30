@@ -62,4 +62,13 @@ DEFAULT CHARACTER SET utf8mb4;
   * 封装公共异常
   * 处理跨域请求
 
+* 2026-01-30
+  
+  * 接入minio，由**本地文件存储**转为**对象存储**
+  * 修改FileInfo的数据库表(SQL Table) => Mapper => Service => Controller
+  * 修改文件查询、上传、下载逻辑，更新接口到Apifox
+  
+  
+  
+  
   
