@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.netdisk.mapper.DiskItemMapper">
+
+    <!-- ===================== -->
+    <!-- 通用字段映射 -->
+    <!-- ===================== -->
+    <resultMap id="DiskItemResultMap" type="com.example.netdisk.entity.DiskItem">
+        <id     column="id"           property="id"/>
+        <result column="type"         property="type"/>
+        <result column="name"         property="name"/>
+        <result column="parent_id"    property="parentId"/>
+        <result column="owner_id"     property="ownerId"/>
+
+        <result column="bucket_name"  property="bucketName"/>
+        <result column="object_key"   property="objectKey"/>
+        <result column="file_size"    property="fileSize"/>
+        <result column="content_type" property="contentType"/>
+        <result column="file_ext"     property="fileExt"/>
+        <result column="etag"         property="etag"/>
+
+        <result column="is_deleted"   property="isDeleted"/>
+        <result column="deleted_at"   property="deletedAt"/>
+
+        <result column="create_time"  property="createTime"/>
+        <result column="update_time"  property="updateTime"/>
+    </resultMap>
+
+    <!-- ===================== -->
+    <!-- 新增文件 / 文件夹 -->
+    <!-- ===================== -->
+    <insert id="insert" parameterType="com.example.netdisk.entity.DiskItem"
+            useGeneratedKeys="true" keyProperty="id">
+
+        insert into disk_item (
+            type,
+            name,
+            parent_id,
+            owner_id,
+            bucket_name,
+            object_key,
+            file_size,
+            content_type,
+            file_ext,
+            etag,
+            is_deleted,
+            create_time,
+            update_time
+        ) values (
+                     #{type},
+                     #{name},
+                     #{parentId},
+                     #{ownerId},
+                     #{bucketName},
+                     #{objectKey},
+                     #{fileSize},
+                     #{contentType},
+                     #{fileExt},
+                     #{etag},
+                     #{isDeleted},
+                     now(),
+                     now()
+                 )
+    </insert>
+
+    <!-- ===================== -->
+    <!-- 根据 ID 查询 -->
+    <!-- ===================== -->
+    <select id="findById" resultMap="DiskItemResultMap">
+        select *
+        from disk_item
+        where id = #{id}
+    </select>
+
+    <!-- ===================== -->
+    <!-- 查询某目录下的子节点 -->
+    <!-- ===================== -->
+    <select id="findByParent" resultMap="DiskItemResultMap">
+        select *
+        from disk_item
+        where owner_id = #{ownerId}
+        and parent_id <![CDATA[<=>]]> #{parentId}
+        and is_deleted = 0
+        order by
+        type desc,  -- 文件夹在前（FOLDER > FILE）
+        create_time desc
+    </select>
+
+    <!-- ===================== -->
+    <!-- 移动文件 / 文件夹 -->
+    <!-- ===================== -->
+    <update id="updateParent">
+        update disk_item
+        set parent_id = #{parentId},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- ===================== -->
+    <!-- 逻辑删除（回收站） -->
+    <!-- ===================== -->
+    <update id="softDelete">
+        update disk_item
+        set is_deleted = 1,
+            deleted_at = now(),
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- ===================== -->
+    <!-- 回收站列表 -->
+    <!-- ===================== -->
+    <select id="findDeleted" resultMap="DiskItemResultMap">
+        select *
+        from disk_item
+        where owner_id = #{ownerId}
+          and is_deleted = 1
+        order by deleted_at desc
+    </select>
+
+</mapper>

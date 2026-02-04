@@ -68,6 +68,10 @@ DEFAULT CHARACTER SET utf8mb4;
   * 修改FileInfo的数据库表(SQL Table) => Mapper => Service => Controller
   * 修改文件查询、上传、下载逻辑，更新接口到Apifox
   
+* 2026-02-03
+  
+  * MinIO对象存储模型 => 网盘文件模型
+  * FileInfo => DiskItem
   
   
   
