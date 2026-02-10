@@ -18,4 +18,10 @@ public interface DiskItemService {
 
     DiskItem getById(Long ownerId, Long id);
 
+    List<DiskItem> listDeleted(Long ownerId);
+
+    void restore(Long ownerId, Long itemId);
+
+    void deleteForever(Long ownerId, Long itemId);
+
 }

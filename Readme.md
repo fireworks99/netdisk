@@ -73,6 +73,11 @@ DEFAULT CHARACTER SET utf8mb4;
   * MinIO对象存储模型 => 网盘文件模型
   * FileInfo => DiskItem
   
+* 2026-02-10
+  
+  * 回收站（列表查询、恢复、彻底删除）
+  
+  
   
   
   

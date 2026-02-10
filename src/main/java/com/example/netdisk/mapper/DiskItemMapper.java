@@ -25,4 +25,10 @@ public interface DiskItemMapper {
 
     List<DiskItem> findDeleted(@Param("ownerId") Long ownerId);
 
+    int restore(Long id);
+
+    int deletePhysical(Long id);
+
+    List<DiskItem> findChildren(Long parentId);
+
 }

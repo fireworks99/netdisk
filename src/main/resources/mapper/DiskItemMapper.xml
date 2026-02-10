@@ -121,4 +121,32 @@
         order by deleted_at desc
     </select>
 
+    <!-- ===================== -->
+    <!-- 恢复逻辑删除的文件（夹） -->
+    <!-- ===================== -->
+    <update id="restore">
+        update disk_item
+        set is_deleted = 0,
+            deleted_at = null,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <!-- ===================== -->
+    <!-- 物理删除（当前DiskItem） -->
+    <!-- ===================== -->
+    <delete id="deletePhysical">
+        delete from disk_item
+        where id = #{id}
+    </delete>
+
+    <!-- ===================== -->
+    <!-- 查询子节点（用于递归删除） -->
+    <!-- ===================== -->
+    <select id="findChildren" resultMap="DiskItemResultMap">
+        select *
+        from disk_item
+        where parent_id = #{parentId}
+    </select>
+
 </mapper>

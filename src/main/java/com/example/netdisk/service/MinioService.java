@@ -1,7 +1,9 @@
 package com.example.netdisk.service;
 
+import com.example.netdisk.exception.BusinessException;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
 import io.minio.http.Method;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,24 @@ public class MinioService {
             );
         } catch (Exception e) {
             throw new RuntimeException("获取文件预览URL失败", e);
+        }
+    }
+
+    /**
+     * 物理删除文件
+     * @param bucket
+     * @param objectKey
+     */
+    public void deleteObject(String bucket, String objectKey) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(objectKey)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new BusinessException(500, "MinIO删除文件失败");
         }
     }
 

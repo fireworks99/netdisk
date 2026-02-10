@@ -80,6 +80,15 @@ public class DiskItemController {
     }
 
     /**
+     * 移动文件（夹）
+     */
+    @PostMapping("move")
+    public Result<DiskItem> move(@RequestBody DiskItem item) {
+        diskItemService.move(getUserId(), item.getId(), item.getParentId());
+        return Result.success(null);
+    }
+
+    /**
      * 删除文件（夹）
      */
     @DeleteMapping("/{id}")
@@ -100,5 +109,33 @@ public class DiskItemController {
         }
 
         return Result.success(minioService.getPreviewUrl(item.getObjectKey(), item.getContentType()));
+    }
+
+    /**
+     * 回收站列表
+     */
+    @GetMapping("/recycle")
+    public Result<List<DiskItem>> recycleList() {
+        return Result.success(
+                diskItemService.listDeleted(getUserId())
+        );
+    }
+
+    /**
+     * 恢复已删除的文件（夹）
+     */
+    @PostMapping("/{id}/restore")
+    public Result<Void> restore(@PathVariable Long id) {
+        diskItemService.restore(getUserId(), id);
+        return Result.success(null);
+    }
+
+    /**
+     * 彻底删除
+     */
+    @DeleteMapping("/{id}/forever")
+    public Result<Void> deleteForever(@PathVariable Long id) {
+        diskItemService.deleteForever(getUserId(), id);
+        return Result.success(null);
     }
 }

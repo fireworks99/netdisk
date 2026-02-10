@@ -13,9 +13,11 @@ import java.util.List;
 public class DiskItemServiceImpl implements DiskItemService {
 
     private final DiskItemMapper diskItemMapper;
+    private final MinioService minioService;
 
-    public DiskItemServiceImpl(DiskItemMapper diskItemMapper) {
+    public DiskItemServiceImpl(DiskItemMapper diskItemMapper, MinioService minioService) {
         this.diskItemMapper = diskItemMapper;
+        this.minioService = minioService;
     }
 
     @Override
@@ -49,12 +51,14 @@ public class DiskItemServiceImpl implements DiskItemService {
         return file;
     }
 
+    // 文件(夹)移动
     @Override
     public void move(Long ownerId, Long itemId, Long targetParentId) {
         DiskItem item = getById(ownerId, itemId);
         diskItemMapper.updateParent(item.getId(), targetParentId);
     }
 
+    // 逻辑删除
     @Override
     public void delete(Long ownerId, Long itemId) {
         // 并不是多此一举，是为了确保删除的是自己的文件
@@ -74,4 +78,54 @@ public class DiskItemServiceImpl implements DiskItemService {
         return item;
     }
 
+    /**
+     * 回收站列表
+     */
+    @Override
+    public List<DiskItem> listDeleted(Long ownerId) {
+        return diskItemMapper.findDeleted(ownerId);
+    }
+
+    /**
+     * 恢复已删除的文件（夹）
+     */
+    @Override
+    public void restore(Long ownerId, Long itemId) {
+
+        DiskItem item = getById(ownerId, itemId);
+        if(!Boolean.TRUE.equals(item.getIsDeleted())) {
+            throw new BusinessException(400, "该资源不在回收站中");
+        }
+        diskItemMapper.restore(item.getId());
+
+    }
+
+    /**
+     * 物理删除（文件夹递归删除）
+     */
+    @Override
+    public void deleteForever(Long ownerId, Long itemId) {
+
+        DiskItem item = getById(ownerId, itemId);
+        if(!Boolean.TRUE.equals(item.getIsDeleted())) {
+            throw new BusinessException(400, "该资源不在回收站中");
+        }
+        deleteRecursively(item);
+    }
+
+    public void deleteRecursively(DiskItem item) {
+
+        // 如果是文件，先删除MinIO对象
+        if("FILE".equals(item.getType())) {
+            minioService.deleteObject(item.getBucketName(), item.getObjectKey());
+        }
+
+        // 查询子节点并删除（只有文件夹才有子节点，不然这里要放到删除的前面）
+        List<DiskItem> children = diskItemMapper.findChildren(item.getId());
+        for(DiskItem child: children) {
+            deleteRecursively(child);
+        }
+
+        diskItemMapper.deletePhysical(item.getId());
+    }
 }
