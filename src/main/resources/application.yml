@@ -63,3 +63,12 @@ minio:
   accessKey: minioadmin
   secretKey: minioadmin
   bucket: netdisk
+
+
+# ================================
+# 定期清理已删除的文件
+# ================================
+disk:
+  recycle:
+    expire-days: 30        # 回收站保留天数 N
+    cron: "0 37 15 * * ?"    # 清理任务执行时间（每天凌晨 3 点）

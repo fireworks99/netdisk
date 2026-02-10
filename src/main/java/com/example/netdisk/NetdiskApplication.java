@@ -3,12 +3,13 @@ package com.example.netdisk;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @SpringBootApplication = @SpringBootConfiguration + @EnableAutoConfiguration + @ComponentScan
  * @SpringBootConfiguration
  * @EnableAutoConfiguration
- * @ComponentScan：没写 basePackages，意味着默认扫描“当前类所在包 + 所有子包”
+ * @ComponentScan： 没写 basePackages，意味着默认扫描“当前类所在包 + 所有子包”
  *
  * Spring启动过程：
  * 1. 找到启动类 NetdiskApplication
@@ -24,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 6. 把这些类注册为 Bean
  */
 @SpringBootApplication
-
+@EnableScheduling
 /**
  * 报错：Parameter 0 of constructor in com.example.netdisk.controller.UserController
  * required a bean of type 'com.example.netdisk.mapper.UserMapper'

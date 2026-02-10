@@ -6,6 +6,7 @@ import com.example.netdisk.mapper.DiskItemMapper;
 import com.example.netdisk.service.DiskItemService;
 import com.example.netdisk.service.MinioService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -127,5 +128,23 @@ public class DiskItemServiceImpl implements DiskItemService {
         }
 
         diskItemMapper.deletePhysical(item.getId());
+    }
+
+    /**
+     * @Transactional : 自动管理事务的开启、提交、回滚，让你不用手动编写事务代码。
+     */
+    @Override
+    @Transactional
+    public void deleteForeverBySystem(Long itemId) {
+        DiskItem item = diskItemMapper.findById(itemId);
+        if (item == null) {
+            return;
+        }
+
+        if (!Boolean.TRUE.equals(item.getIsDeleted())) {
+            return;
+        }
+
+        deleteRecursively(item);
     }
 }

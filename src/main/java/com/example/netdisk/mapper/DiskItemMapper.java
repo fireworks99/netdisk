@@ -31,4 +31,6 @@ public interface DiskItemMapper {
 
     List<DiskItem> findChildren(Long parentId);
 
+    List<Long> findExpiredDeleted(@Param("days") int days);
+
 }

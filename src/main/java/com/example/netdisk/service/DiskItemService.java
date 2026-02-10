@@ -24,4 +24,5 @@ public interface DiskItemService {
 
     void deleteForever(Long ownerId, Long itemId);
 
+    void deleteForeverBySystem(Long itemId);
 }

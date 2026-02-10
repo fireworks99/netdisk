@@ -149,4 +149,16 @@
         where parent_id = #{parentId}
     </select>
 
+    <!-- ===================== -->
+    <!-- 查出已过期的节点 -->
+    <!-- ===================== -->
+    <select id="findExpiredDeleted" resultType="long">
+        <![CDATA[
+        select id
+        from disk_item
+        where is_deleted = 1
+          and deleted_at < date_sub(now(), interval #{days} day)
+        ]]>
+    </select>
+
 </mapper>
