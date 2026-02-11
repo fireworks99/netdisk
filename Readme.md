@@ -77,7 +77,31 @@ DEFAULT CHARACTER SET utf8mb4;
   
   * 回收站（列表查询、恢复、彻底删除）
   * 采用定时任务清理回收站，将过期时间与执行时间提取到配置文件
+  
+* 2026-02-11
+  
+  * 文件查询允许分页以及按照名称过滤
+  
+  * 引入**P6Spy**，监控SQL并打印日志
+  
+  * 引入**logstash-logback-encoder**将纯文本日志转为JSON格式日志
+  
+  * ```
+    Spring Boot
+        ↓
+    P6Spy 监控SQL打印纯文本日志
+        ↓
+    Logback 输出 JSON 日志
+        ↓
+    Filebeat（采集日志文件）
+        ↓
+    Elasticsearch（存储索引）
+        ↓
+    Kibana（查询 + 可视化）
+    ```
+  
   * 
+  
   
   
   

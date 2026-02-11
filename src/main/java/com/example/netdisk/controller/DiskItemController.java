@@ -1,6 +1,8 @@
 package com.example.netdisk.controller;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.common.Result;
+import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.dto.FileInfo.UploadUrlRequest;
 import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.entity.DiskItem;
@@ -137,5 +139,14 @@ public class DiskItemController {
     public Result<Void> deleteForever(@PathVariable Long id) {
         diskItemService.deleteForever(getUserId(), id);
         return Result.success(null);
+    }
+
+    /**
+     * 分页按条件查询
+     */
+    @GetMapping("/page")
+    public Result<PageResult<DiskItem>> page(DiskItemQuery query) {
+        query.setOwnerId(getUserId());
+        return Result.success(diskItemService.pageQuery(query));
     }
 }

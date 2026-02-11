@@ -51,16 +51,16 @@ create table if not exists disk_item (
         on update current_timestamp comment '更新时间',
 
     -- 索引
-    index idx_owner_parent (owner_id, parent_id),
-    index idx_owner_deleted (owner_id, is_deleted),
     index idx_object_key (object_key),
+    -- 目录查询（最常用）
+    index idx_owner_parent_deleted  (owner_id, parent_id, is_deleted),
+    -- 回收站查询
+    index idx_owner_deleted (owner_id, is_deleted),
+    -- 名称搜索
+    index idx_name (name),
 
     -- 约束
     constraint chk_type check (type in ('FILE', 'FOLDER'))
 ) engine=InnoDB
   default charset=utf8mb4
     comment='网盘资源表（文件/文件夹统一）';
-
-
-
-

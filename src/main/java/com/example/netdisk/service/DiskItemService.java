@@ -1,5 +1,7 @@
 package com.example.netdisk.service;
 
+import com.example.netdisk.common.PageResult;
+import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.entity.DiskItem;
 
 import java.util.List;
@@ -25,4 +27,6 @@ public interface DiskItemService {
     void deleteForever(Long ownerId, Long itemId);
 
     void deleteForeverBySystem(Long itemId);
+
+    PageResult<DiskItem> pageQuery(DiskItemQuery query);
 }

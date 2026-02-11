@@ -1,5 +1,6 @@
 package com.example.netdisk.mapper;
 
+import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.entity.DiskItem;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,5 +33,9 @@ public interface DiskItemMapper {
     List<DiskItem> findChildren(Long parentId);
 
     List<Long> findExpiredDeleted(@Param("days") int days);
+
+    List<DiskItem> pageQuery(DiskItemQuery query);
+
+    Long countQuery(DiskItemQuery query);
 
 }

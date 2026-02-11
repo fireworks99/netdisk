@@ -161,4 +161,48 @@
         ]]>
     </select>
 
+    <!-- ===================== -->
+    <!-- 分页查询 -->
+    <!-- ===================== -->
+    <select id="pageQuery" resultMap="DiskItemResultMap">
+        select *
+        from disk_item
+        <where>
+            owner_id = #{ownerId}
+            and parent_id <![CDATA[<=>]]> #{parentId}
+
+            <if test="deleted != null">
+                and is_deleted = #{deleted}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                and name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+
+        order by type desc, update_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!-- ===================== -->
+    <!-- 总数统计 -->
+    <!-- ===================== -->
+    <select id="countQuery" resultType="long">
+        select count(*)
+        from disk_item
+        <where>
+            owner_id = #{ownerId}
+            and parent_id <![CDATA[<=>]]> #{parentId}
+
+            <if test="deleted != null">
+                and is_deleted = #{deleted}
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                and name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+    </select>
+
+
 </mapper>

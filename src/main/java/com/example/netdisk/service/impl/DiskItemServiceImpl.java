@@ -1,5 +1,7 @@
 package com.example.netdisk.service.impl;
 
+import com.example.netdisk.common.PageResult;
+import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.mapper.DiskItemMapper;
@@ -146,5 +148,19 @@ public class DiskItemServiceImpl implements DiskItemService {
         }
 
         deleteRecursively(item);
+    }
+
+    /**
+     * 分页按条件查询
+     */
+    @Override
+    public PageResult<DiskItem> pageQuery(DiskItemQuery query) {
+        int offset = (query.getPageNum() - 1) * query.getPageSize();
+        query.setOffset(offset);
+
+        List<DiskItem> list = diskItemMapper.pageQuery(query);
+        Long total = diskItemMapper.countQuery(query);
+
+        return new PageResult<>(total, list);
     }
 }
