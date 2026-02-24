@@ -9,8 +9,14 @@ import com.example.netdisk.service.DiskItemService;
 import com.example.netdisk.service.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class DiskItemServiceImpl implements DiskItemService {
@@ -54,11 +60,45 @@ public class DiskItemServiceImpl implements DiskItemService {
         return file;
     }
 
+    public boolean isChildOf(Long targetId, Long sourceId) {
+
+        while (targetId != null) {
+            DiskItem item = diskItemMapper.findById(targetId);
+            if(item == null) {
+                return false;
+            }
+            if(Objects.equals(item.getParentId(), sourceId)) {
+                return true;
+            }
+            targetId = item.getParentId();
+        }
+
+        return false;
+    }
+
     // 文件(夹)移动
     @Override
     public void move(Long ownerId, Long itemId, Long targetParentId) {
         DiskItem item = getById(ownerId, itemId);
+
+        if(Objects.equals(itemId, targetParentId)) {
+            throw new RuntimeException("不能移动到自身目录");
+        }
+
+        if(isChildOf(targetParentId, itemId)) {
+            throw new RuntimeException("不能移动到子目录");
+        }
+
         diskItemMapper.updateParent(item.getId(), targetParentId);
+    }
+
+    @Override
+    @Transactional
+    public void batchMove(Long ownerId, List<Long> ids, Long targetParentId) {
+//        for(Long id: ids) {
+//            move(ownerId, id, targetParentId);
+//        }
+        diskItemMapper.batchMove(ownerId, ids, targetParentId);
     }
 
     // 逻辑删除
@@ -67,6 +107,15 @@ public class DiskItemServiceImpl implements DiskItemService {
         // 并不是多此一举，是为了确保删除的是自己的文件
         DiskItem item = getById(ownerId, itemId);
         diskItemMapper.softDelete(item.getId());
+    }
+
+    @Override
+    @Transactional
+    public void batchSoftDelete(Long ownerId, List<Long> ids) {
+//        for(Long id: ids) {
+//            delete(ownerId, id);
+//        }
+        diskItemMapper.batchSoftDelete(ownerId, ids);
     }
 
     @Override
@@ -133,7 +182,7 @@ public class DiskItemServiceImpl implements DiskItemService {
     }
 
     /**
-     * @Transactional : 自动管理事务的开启、提交、回滚，让你不用手动编写事务代码。
+     * @ Transactional: 自动管理事务的开启、提交、回滚，让你不用手动编写事务代码。 "修改“操作最好加上这一注解
      */
     @Override
     @Transactional
@@ -162,5 +211,38 @@ public class DiskItemServiceImpl implements DiskItemService {
         Long total = diskItemMapper.countQuery(query);
 
         return new PageResult<>(total, list);
+    }
+
+    @Override
+    public void batchDownload(Long ownerId, List<Long> ids, HttpServletResponse response) throws Exception {
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment; filename=download.zip");
+
+        ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
+
+        try {
+            for (Long id : ids) {
+                DiskItem item = diskItemMapper.findById(id);
+                if (item == null || item.getType().equals("FOLDER")) {
+                    continue;
+                }
+
+                InputStream inputStream = minioService.getObject(item.getBucketName(), item.getObjectKey());
+                zos.putNextEntry(new ZipEntry(item.getName()));
+
+                StreamUtils.copy(inputStream, zos);
+
+                zos.closeEntry();
+            }
+
+            zos.finish();
+            zos.flush();
+        } catch (Exception e) {
+
+            // 不要让异常走全局异常处理
+            response.reset();
+            response.setContentType("application/json");
+            response.getWriter().write("{\"code\":500,\"msg\":\"下载失败\"}");
+        }
     }
 }

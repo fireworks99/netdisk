@@ -100,7 +100,9 @@ DEFAULT CHARACTER SET utf8mb4;
     Kibana（查询 + 可视化）
     ```
   
-  * 
+* 2026-02-24
+  
+  * 批量操作（移动、删除、下载）
   
   
   

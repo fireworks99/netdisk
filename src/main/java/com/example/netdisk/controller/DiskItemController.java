@@ -5,12 +5,14 @@ import com.example.netdisk.common.Result;
 import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.dto.FileInfo.UploadUrlRequest;
 import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
+import com.example.netdisk.dto.DiskItem.BatchOperateRequest;
 import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.service.MinioService;
 import com.example.netdisk.service.impl.DiskItemServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -91,11 +93,29 @@ public class DiskItemController {
     }
 
     /**
+     * 批量移动文件（夹）
+     */
+    @PostMapping("/batch/move")
+    public Result<Void> batchMove(@RequestBody BatchOperateRequest request) {
+        diskItemService.batchMove(getUserId(), request.getItemIds(), request.getTargetParentId());
+        return Result.success(null);
+    }
+
+    /**
      * 删除文件（夹）
      */
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         diskItemService.delete(getUserId(), id);
+        return Result.success(null);
+    }
+
+    /**
+     * 批量逻辑删除
+     */
+    @PostMapping("/batch/delete")
+    public Result<Void> batchDelete(@RequestBody BatchOperateRequest request) {
+        diskItemService.batchSoftDelete(getUserId(), request.getItemIds());
         return Result.success(null);
     }
 
@@ -148,5 +168,13 @@ public class DiskItemController {
     public Result<PageResult<DiskItem>> page(DiskItemQuery query) {
         query.setOwnerId(getUserId());
         return Result.success(diskItemService.pageQuery(query));
+    }
+
+    /**
+     * 批量下载
+     */
+    @PostMapping("/batch/download")
+    public void batchDownload(@RequestBody BatchOperateRequest request, HttpServletResponse response) throws Exception {
+        diskItemService.batchDownload(getUserId(), request.getItemIds(), response);
     }
 }

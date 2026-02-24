@@ -4,6 +4,7 @@ import com.example.netdisk.common.PageResult;
 import com.example.netdisk.dto.DiskItem.DiskItemQuery;
 import com.example.netdisk.entity.DiskItem;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface DiskItemService {
@@ -16,7 +17,11 @@ public interface DiskItemService {
 
     void move(Long ownerId, Long itemId, Long targetParentId);
 
+    void batchMove(Long ownerId, List<Long> ids, Long targetParentId);
+
     void delete(Long ownerId, Long itemId);
+
+    void batchSoftDelete(Long ownerId, List<Long> ids);
 
     DiskItem getById(Long ownerId, Long id);
 
@@ -29,4 +34,6 @@ public interface DiskItemService {
     void deleteForeverBySystem(Long itemId);
 
     PageResult<DiskItem> pageQuery(DiskItemQuery query);
+
+    void batchDownload(Long ownerId, List<Long> ids, HttpServletResponse response) throws Exception;
 }

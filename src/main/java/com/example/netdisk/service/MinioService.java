@@ -1,6 +1,7 @@
 package com.example.netdisk.service;
 
 import com.example.netdisk.exception.BusinessException;
+import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
@@ -8,6 +9,7 @@ import io.minio.http.Method;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -99,6 +101,34 @@ public class MinioService {
             );
         } catch (Exception e) {
             throw new BusinessException(500, "MinIO删除文件失败");
+        }
+    }
+
+    public InputStream getObject(String bucketName, String objectKey) {
+
+        try {
+            return minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("MinIO 获取文件失败", e);
+        }
+    }
+
+    public void removeObject(String bucketName, String objectKey) {
+
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("MinIO 删除文件失败", e);
         }
     }
 

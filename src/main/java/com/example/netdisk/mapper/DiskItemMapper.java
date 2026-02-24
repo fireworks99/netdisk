@@ -38,4 +38,8 @@ public interface DiskItemMapper {
 
     Long countQuery(DiskItemQuery query);
 
+    int batchSoftDelete(@Param("ownerId") Long ownerId, @Param("ids") List<Long> ids);
+
+    int batchMove(@Param("ownerId") Long ownerId, @Param("ids") List<Long> ids, @Param("targetParentId") Long targetParentId);
+
 }

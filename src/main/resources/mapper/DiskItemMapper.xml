@@ -204,5 +204,28 @@
         </where>
     </select>
 
+    <!-- ===================== -->
+    <!-- 批量删除 -->
+    <!-- ===================== -->
+    <update id="batchSoftDelete">
+        update disk_item
+        set is_deleted = 1,
+            deleted_at = now(),
+            update_time = now()
+        where owner_id = #{ownerId}
+            and id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </update>
 
+    <!-- ===================== -->
+    <!-- 批量移动 -->
+    <!-- ===================== -->
+    <update id="batchMove">
+        update disk_item
+        set parent_id = #{targetParentId},
+            update_time = now()
+        where owner_id = #{ownerId}
+            and id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </update>
 </mapper>
