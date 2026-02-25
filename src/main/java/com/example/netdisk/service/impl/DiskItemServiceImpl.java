@@ -13,6 +13,7 @@ import org.springframework.util.StreamUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -58,6 +59,19 @@ public class DiskItemServiceImpl implements DiskItemService {
 
         diskItemMapper.insert(file);
         return file;
+    }
+
+    @Override
+    public List<DiskItem> batchSaveFile(List<DiskItem> files) {
+        List<DiskItem> list = new ArrayList<>();
+        for(DiskItem file: files) {
+            file.setType("FILE");
+            file.setIsDeleted(false);
+
+            diskItemMapper.insert(file);
+            list.add(file);
+        }
+        return list;
     }
 
     public boolean isChildOf(Long targetId, Long sourceId) {

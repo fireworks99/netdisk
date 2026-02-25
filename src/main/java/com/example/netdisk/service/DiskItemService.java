@@ -15,6 +15,8 @@ public interface DiskItemService {
 
     DiskItem saveFile(DiskItem item);
 
+    List<DiskItem> batchSaveFile(List<DiskItem> files);
+
     void move(Long ownerId, Long itemId, Long targetParentId);
 
     void batchMove(Long ownerId, List<Long> ids, Long targetParentId);

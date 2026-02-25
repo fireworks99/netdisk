@@ -13,6 +13,7 @@ import com.example.netdisk.service.impl.DiskItemServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,6 +75,28 @@ public class DiskItemController {
         );
     }
 
+    @PostMapping("/batch/upload-url")
+    public Result<List<UploadUrlResponse>> getBatchUploadUrl(
+            @RequestBody List<UploadUrlRequest> requests) throws Exception{
+
+        List<UploadUrlResponse> list = new ArrayList<>();
+        for(UploadUrlRequest request: requests) {
+            String objectKey = minioService.buildObjectName(
+                    getUserId(),
+                    request.getOriginalName()
+            );
+
+            String uploadUrl = minioService.getUploadUrl(
+                    objectKey,
+                    request.getContentType()
+            );
+
+            list.add(new UploadUrlResponse(uploadUrl, objectKey));
+        }
+
+        return Result.success(list);
+    }
+
     /**
      * 保存文件信息
      */
@@ -81,6 +104,16 @@ public class DiskItemController {
     public Result<DiskItem> saveFile(@RequestBody DiskItem item) {
         item.setOwnerId(getUserId());
         return Result.success(diskItemService.saveFile(item));
+    }
+
+    @PostMapping("/batch/file")
+    public Result<List<DiskItem>> batchSaveFile(@RequestBody List<DiskItem> items) {
+
+        for(DiskItem item: items) {
+            item.setOwnerId(getUserId());
+        }
+
+        return Result.success(diskItemService.batchSaveFile(items));
     }
 
     /**

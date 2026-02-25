@@ -20,8 +20,8 @@
     <!-- P6Spy 单独提高等级 -->
     <logger name="p6spy" level="INFO"/>
 
-    <!-- MyBatis Mapper -->
-    <logger name="com.example.netdisk.mapper" level="DEBUG"/>
+    <!-- 关闭 MyBatis SQL 日志 -->
+    <logger name="com.example.netdisk.mapper" level="OFF"/>
 
     <!-- 根日志 -->
     <root level="INFO">

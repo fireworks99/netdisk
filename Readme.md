@@ -104,6 +104,11 @@ DEFAULT CHARACTER SET utf8mb4;
   
   * 批量操作（移动、删除、下载）
   
+* 2026-02-25
+  
+  * 批量上传
+  * 精简SQL日志
+  
   
   
   

@@ -169,7 +169,10 @@
         from disk_item
         <where>
             owner_id = #{ownerId}
-            and parent_id <![CDATA[<=>]]> #{parentId}
+
+            <if test="deleted != true">
+                and parent_id <![CDATA[<=>]]> #{parentId}
+            </if>
 
             <if test="deleted != null">
                 and is_deleted = #{deleted}
