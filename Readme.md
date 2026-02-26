@@ -28,6 +28,12 @@ DEFAULT CHARACTER SET utf8mb4;
 
 
 
+## 表关联
+
+![DB](/src/main/resources/static/db.svg)
+
+
+
 ## 更新日志
 
 * 2026-01-06
@@ -114,7 +120,6 @@ DEFAULT CHARACTER SET utf8mb4;
 * 2026-02-26
   
   * 最近访问
-  
   
   
   

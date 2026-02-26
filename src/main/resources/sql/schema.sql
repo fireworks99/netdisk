@@ -88,3 +88,49 @@ create table if not exists recent_access (
     unique key uk_user_item (user_id, disk_item_id),
     index idx_user_time (user_id, access_time desc)
 );
+
+-- 用户表
+create table sys_user (
+    id bigint primary key auto_increment,
+    username varchar(50) not null unique,
+    password varchar(100) not null,
+    nickname varchar(50),
+    status tinyint not null default 1,  -- 1正常 0禁用
+    create_time datetime default current_timestamp,
+    update_time datetime default current_timestamp on update current_timestamp
+);
+
+-- 角色表
+create table sys_role (
+    id bigint primary key auto_increment,
+    role_name varchar(50) not null unique,
+    role_code varchar(50) not null unique,
+    description varchar(255),
+    create_time datetime default current_timestamp
+);
+
+-- 权限表
+create table sys_permission (
+    id bigint primary key auto_increment,
+    permission_name varchar(100) not null,
+    permission_code varchar(100) not null unique,
+    type varchar(20) not null,  -- MENU / API
+    parent_id bigint null,
+    path varchar(200),
+    method varchar(10),
+    create_time datetime default current_timestamp
+);
+
+-- 用户角色表
+create table sys_user_role (
+    user_id bigint not null,
+    role_id bigint not null,
+    primary key (user_id, role_id)
+);
+
+-- 角色权限表
+create table sys_role_permission (
+    role_id bigint not null,
+    permission_id bigint not null,
+    primary key (role_id, permission_id)
+);
