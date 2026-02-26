@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.netdisk.mapper.FavoriteMapper">
+
+    <insert id="insert">
+        insert into favorite (user_id, disk_item_id)
+        values (#{userId}, #{diskItemId})
+    </insert>
+
+    <delete id="delete">
+        delete from favorite
+        where user_id = #{userId}
+          and disk_item_id = #{diskItemId}
+    </delete>
+
+    <select id="exists" resultType="int">
+        select count(1)
+        from favorite
+        where user_id = #{userId}
+          and disk_item_id = #{diskItemId}
+    </select>
+
+    <select id="pageFavorite" resultMap="com.example.netdisk.mapper.DiskItemMapper.DiskItemResultMap">
+        select d.*
+        from favorite f
+                 join disk_item d on d.id = f.disk_item_id
+        where f.user_id = #{userId}
+          and d.is_deleted = 0
+        order by f.create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="countFavorite" resultType="long">
+        select count(1)
+        from favorite f
+                 join disk_item d on d.id = f.disk_item_id
+        where f.user_id = #{userId}
+          and d.is_deleted = 0
+    </select>
+
+</mapper>

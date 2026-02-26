@@ -64,3 +64,27 @@ create table if not exists disk_item (
 ) engine=InnoDB
   default charset=utf8mb4
     comment='网盘资源表（文件/文件夹统一）';
+
+-- 我的收藏
+create table if not exists favorite (
+    id bigint primary key auto_increment,
+    user_id bigint not null,
+    disk_item_id bigint not null,
+    create_time datetime not null default current_timestamp,
+
+    unique key uk_user_item (user_id, disk_item_id),
+    index idx_user (user_id),
+    index idx_item (disk_item_id)
+);
+
+-- 最近访问
+create table if not exists recent_access (
+    id bigint primary key auto_increment,
+    user_id bigint not null,
+    disk_item_id bigint not null,
+    action varchar(20) not null,
+    access_time datetime not null default current_timestamp on update current_timestamp,
+
+    unique key uk_user_item (user_id, disk_item_id),
+    index idx_user_time (user_id, access_time desc)
+);

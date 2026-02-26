@@ -9,7 +9,9 @@ import com.example.netdisk.dto.DiskItem.BatchOperateRequest;
 import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.service.MinioService;
+import com.example.netdisk.service.RecentService;
 import com.example.netdisk.service.impl.DiskItemServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,15 +23,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/disk")
+@RequiredArgsConstructor
 public class DiskItemController {
 
     private final DiskItemServiceImpl diskItemService;
     private final MinioService minioService;
 
-    public DiskItemController(DiskItemServiceImpl diskItemService, MinioService minioService) {
-        this.diskItemService = diskItemService;
-        this.minioService = minioService;
-    }
+    private final RecentService recentService;
 
     // 获取当前登录用户
     private Long getUserId() {
@@ -103,6 +103,9 @@ public class DiskItemController {
     @PostMapping("/file")
     public Result<DiskItem> saveFile(@RequestBody DiskItem item) {
         item.setOwnerId(getUserId());
+
+        recentService.record(getUserId(), item.getId(), "upload");
+
         return Result.success(diskItemService.saveFile(item));
     }
 
@@ -111,6 +114,7 @@ public class DiskItemController {
 
         for(DiskItem item: items) {
             item.setOwnerId(getUserId());
+            recentService.record(getUserId(), item.getId(), "upload");
         }
 
         return Result.success(diskItemService.batchSaveFile(items));
@@ -163,6 +167,8 @@ public class DiskItemController {
             throw new BusinessException(400, "文件夹不支持预览");
         }
 
+        recentService.record(getUserId(), item.getId(), "preview");
+
         return Result.success(minioService.getPreviewUrl(item.getObjectKey(), item.getContentType()));
     }
 
@@ -208,6 +214,11 @@ public class DiskItemController {
      */
     @PostMapping("/batch/download")
     public void batchDownload(@RequestBody BatchOperateRequest request, HttpServletResponse response) throws Exception {
+
+        for(Long id: request.getItemIds()) {
+            recentService.record(getUserId(), id, "download");
+        }
+
         diskItemService.batchDownload(getUserId(), request.getItemIds(), response);
     }
 }
