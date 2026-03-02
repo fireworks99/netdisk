@@ -27,8 +27,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 /**
- * 报错：Parameter 0 of constructor in com.example.netdisk.controller.UserController
- * required a bean of type 'com.example.netdisk.mapper.UserMapper'
+ * 报错：Parameter 0 of constructor in com.example.netdisk.controller.SysUserController
+ * required a bean of type 'com.example.netdisk.mapper.SysUserMapper'
  * that could not be found.
  *
  * 翻译：未在容器中找到UserMapper的Bean

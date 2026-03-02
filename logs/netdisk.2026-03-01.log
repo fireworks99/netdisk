@@ -1,0 +1,4 @@
+{"@timestamp":"2026-03-01T15:37:00.014+08:00","@version":"1","message":"开始清理回收站","logger_name":"com.example.netdisk.job.RecycleBinCleanJob","thread_name":"scheduling-1","level":"INFO","level_value":20000}
+{"@timestamp":"2026-03-01T15:37:00.087+08:00","@version":"1","message":"select id         from disk_item         where is_deleted = 1           and deleted_at < date_sub(now(), interval 30 day)","logger_name":"p6spy","thread_name":"scheduling-1","level":"INFO","level_value":20000}
+{"@timestamp":"2026-03-01T15:37:00.088+08:00","@version":"1","message":"[]","logger_name":"com.example.netdisk.job.RecycleBinCleanJob","thread_name":"scheduling-1","level":"INFO","level_value":20000}
+{"@timestamp":"2026-03-01T15:37:00.089+08:00","@version":"1","message":"回收站清理完成，共 0 条","logger_name":"com.example.netdisk.job.RecycleBinCleanJob","thread_name":"scheduling-1","level":"INFO","level_value":20000}

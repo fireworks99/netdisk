@@ -1,135 +1,63 @@
 package com.example.netdisk.service;
 
-import com.example.netdisk.exception.BusinessException;
-import io.minio.GetObjectArgs;
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.MinioClient;
-import io.minio.RemoveObjectArgs;
-import io.minio.http.Method;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
-@Service
-public class MinioService {
-
-    private final MinioClient minioClient;
-
-    @Value("${minio.bucket}")
-    private String bucket;
-
-    public MinioService(MinioClient minioClient) {
-        this.minioClient = minioClient;
-    }
+/**
+ * MinIO 对象存储服务接口
+ * 提供文件上传、下载、预览和删除等功能
+ */
+public interface MinioService {
 
     /**
-     * 构建 objectName(统一规范)
+     * 构建对象存储中的对象名称（统一规范）
      * @param userId 用户ID
-     * @param originalName 原名
-     * @return objectName
+     * @param originalName 原始文件名
+     * @return 规范化的对象名称，格式：user-{userId}/{timestamp}_{sanitizedFileName}
      */
-    public String buildObjectName(Long userId, String originalName) {
-        String safeName = originalName.replaceAll("\\s+", "_");//将所有连续的空格字符替换为下划线
-        return "user-" + userId + "/" + System.currentTimeMillis()  + "_" + safeName;
-    }
+    String buildObjectName(Long userId, String originalName);
 
     /**
-     * 生成 预签名URL
+     * 生成文件上传的预签名URL
+     * 客户端可以使用该URL直接上传文件到MinIO
      * @param objectName 对象名称
-     * @param contentType 文件类型
-     * @return 预签名URL
-     * @throws Exception 异常
+     * @param contentType 文件类型（MIME type）
+     * @return 预签名上传URL，有效期10分钟
+     * @throws Exception 生成URL过程中可能出现的异常
      */
-    public String getUploadUrl(String objectName, String contentType) throws Exception {
-
-        return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.PUT)
-                        .bucket(bucket)
-                        .object(objectName)
-                        .expiry(10, TimeUnit.MINUTES)
-                        .extraQueryParams(
-                                Collections.singletonMap("Content-Type", contentType)
-                        )
-                        .build()
-        );
-    }
+    String getUploadUrl(String objectName, String contentType) throws Exception;
 
     /**
-     * 获取文件预览 / 访问 URL
-     * @param objectName MinIO object key
-     * @param contentType 文件类型
+     * 获取文件预览/访问的预签名URL
+     * 客户端可以使用该URL直接访问或预览文件
+     * @param objectName MinIO对象名称
+     * @param contentType 文件类型（MIME type）
+     * @return 预签名访问URL，有效期30分钟
+     * @throws RuntimeException 生成URL失败时抛出运行时异常
      */
-    public String getPreviewUrl(String objectName, String contentType) {
-
-        try {
-            return minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(bucket)
-                            .object(objectName)
-                            .expiry(30, TimeUnit.MINUTES)
-                            // 告诉浏览器这是啥类型（非常重要）
-                            .extraQueryParams(
-                                    Collections.singletonMap(
-                                            "response-content-type",
-                                            contentType
-                                    )
-                            )
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("获取文件预览URL失败", e);
-        }
-    }
+    String getPreviewUrl(String objectName, String contentType);
 
     /**
      * 物理删除文件
-     * @param bucket
-     * @param objectKey
+     * @param bucket 存储桶名称
+     * @param objectKey 对象键（文件路径）
+     * @throws com.example.netdisk.exception.BusinessException 删除失败时抛出业务异常
      */
-    public void deleteObject(String bucket, String objectKey) {
-        try {
-            minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(objectKey)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new BusinessException(500, "MinIO删除文件失败");
-        }
-    }
+    void deleteObject(String bucket, String objectKey);
 
-    public InputStream getObject(String bucketName, String objectKey) {
+    /**
+     * 获取文件对象的数据流
+     * @param bucketName 存储桶名称
+     * @param objectKey 对象键（文件路径）
+     * @return 文件的输入流
+     * @throws RuntimeException 获取文件失败时抛出运行时异常
+     */
+    InputStream getObject(String bucketName, String objectKey);
 
-        try {
-            return minioClient.getObject(
-                    GetObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(objectKey)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("MinIO 获取文件失败", e);
-        }
-    }
-
-    public void removeObject(String bucketName, String objectKey) {
-
-        try {
-            minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(objectKey)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("MinIO 删除文件失败", e);
-        }
-    }
-
+    /**
+     * 删除对象存储中的文件
+     * @param bucketName 存储桶名称
+     * @param objectKey 对象键（文件路径）
+     * @throws RuntimeException 删除失败时抛出运行时异常
+     */
+    void removeObject(String bucketName, String objectKey);
 }

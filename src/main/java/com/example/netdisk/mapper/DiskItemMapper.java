@@ -10,7 +10,7 @@ public interface DiskItemMapper {
 
     int insert(DiskItem item);
 
-    DiskItem findById(@Param("id") Long id);
+    DiskItem findById(Long id);
 
     List<DiskItem> findByParent(
         @Param("ownerId") Long ownerId,

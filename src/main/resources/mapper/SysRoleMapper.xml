@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.example.netdisk.mapper.SysRoleMapper">
+
+    <resultMap id="SysRoleResultMap" type="com.example.netdisk.entity.SysRole">
+        <id property="id" column="id"/>
+        <result property="roleCode" column="role_code"/>
+        <result property="roleName" column="role_name"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!-- 查询全部角色 -->
+    <select id="findAll" resultMap="SysRoleResultMap">
+        SELECT id, role_code, role_name, description, create_time
+        FROM sys_role
+        ORDER BY id
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="findById" resultMap="SysRoleResultMap">
+        SELECT id, role_code, role_name, description, create_time
+        FROM sys_role
+        WHERE id = #{id}
+    </select>
+
+    <!-- 新增角色 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_role (role_code, role_name, description, create_time)
+        VALUES (#{roleCode}, #{roleName}, #{description}, now())
+    </insert>
+
+    <!-- 删除角色 -->
+    <delete id="deleteById">
+        DELETE FROM sys_role WHERE id = #{id}
+    </delete>
+
+</mapper>

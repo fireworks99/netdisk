@@ -3,10 +3,14 @@ package com.example.netdisk.controller;
 import com.example.netdisk.common.PageResult;
 import com.example.netdisk.common.Result;
 import com.example.netdisk.entity.DiskItem;
+import com.example.netdisk.security.utils.SecurityUtils;
 import com.example.netdisk.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 我的收藏
+ */
 @RestController
 @RequestMapping("/favorite")
 @RequiredArgsConstructor
@@ -16,8 +20,7 @@ public class FavoriteController {
 
     // 获取当前登录用户
     private Long getUserId() {
-        // Todo 从登录态获取
-        return 1L;
+        return SecurityUtils.getUserId();
     }
 
     /**

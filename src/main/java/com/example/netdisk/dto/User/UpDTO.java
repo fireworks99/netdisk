@@ -1,11 +1,10 @@
-package com.example.netdisk.entity;
+package com.example.netdisk.dto.User;
 
 import lombok.Data;
 
 @Data
-public class User {
+public class UpDTO {
 
-    private Long id;
     private String username;
     private String password;
 

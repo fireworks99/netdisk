@@ -6,7 +6,6 @@ import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.mapper.DiskItemMapper;
 import com.example.netdisk.service.DiskItemService;
-import com.example.netdisk.service.MinioService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -23,11 +22,11 @@ import java.util.zip.ZipOutputStream;
 public class DiskItemServiceImpl implements DiskItemService {
 
     private final DiskItemMapper diskItemMapper;
-    private final MinioService minioService;
+    private final MinioServiceImpl minioServiceImpl;
 
-    public DiskItemServiceImpl(DiskItemMapper diskItemMapper, MinioService minioService) {
+    public DiskItemServiceImpl(DiskItemMapper diskItemMapper, MinioServiceImpl minioServiceImpl) {
         this.diskItemMapper = diskItemMapper;
-        this.minioService = minioService;
+        this.minioServiceImpl = minioServiceImpl;
     }
 
     @Override
@@ -183,7 +182,7 @@ public class DiskItemServiceImpl implements DiskItemService {
 
         // 如果是文件，先删除MinIO对象
         if("FILE".equals(item.getType())) {
-            minioService.deleteObject(item.getBucketName(), item.getObjectKey());
+            minioServiceImpl.deleteObject(item.getBucketName(), item.getObjectKey());
         }
 
         // 查询子节点并删除（只有文件夹才有子节点，不然这里要放到删除的前面）
@@ -241,7 +240,7 @@ public class DiskItemServiceImpl implements DiskItemService {
                     continue;
                 }
 
-                InputStream inputStream = minioService.getObject(item.getBucketName(), item.getObjectKey());
+                InputStream inputStream = minioServiceImpl.getObject(item.getBucketName(), item.getObjectKey());
                 zos.putNextEntry(new ZipEntry(item.getName()));
 
                 StreamUtils.copy(inputStream, zos);

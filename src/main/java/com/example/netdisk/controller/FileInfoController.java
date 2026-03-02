@@ -4,26 +4,27 @@ import com.example.netdisk.common.Result;
 import com.example.netdisk.dto.FileInfo.UploadUrlRequest;
 import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.entity.FileInfo;
+import com.example.netdisk.security.utils.SecurityUtils;
 import com.example.netdisk.service.FileInfoService;
-import com.example.netdisk.service.MinioService;
+import com.example.netdisk.service.impl.MinioServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
- * 文件管理
+ * 文件管理（弃用）
  */
 @RestController
 @RequestMapping("/file")
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
-    private final MinioService minioService;
+    private final MinioServiceImpl minioServiceImpl;
 
     public FileInfoController(FileInfoService fileInfoService,
-                              MinioService minioService) {
+                              MinioServiceImpl minioServiceImpl) {
         this.fileInfoService = fileInfoService;
-        this.minioService = minioService;
+        this.minioServiceImpl = minioServiceImpl;
     }
 
     /**
@@ -33,15 +34,14 @@ public class FileInfoController {
     public Result<UploadUrlResponse> getUploadUrl(
             @RequestBody UploadUrlRequest request) throws Exception {
 
-        // TODO 后续从登录态获取
-        Long userId = 1L;
+        Long userId = SecurityUtils.getUserId();;
 
-        String objectKey = minioService.buildObjectName(
+        String objectKey = minioServiceImpl.buildObjectName(
                 userId,
                 request.getOriginalName()
         );
 
-        String uploadUrl = minioService.getUploadUrl(
+        String uploadUrl = minioServiceImpl.getUploadUrl(
                 objectKey,
                 request.getContentType()
         );
@@ -52,14 +52,13 @@ public class FileInfoController {
     }
 
     /**
-     * 前端上传成功后，保存文件信息
+     * 保存文件信息
      */
     @PostMapping("/save")
     public Result<FileInfo> saveFileInfo(
             @RequestBody FileInfo fileInfo) {
 
-        // TODO 设置用户ID
-        fileInfo.setUploaderId(1L);
+        fileInfo.setUploaderId(SecurityUtils.getUserId());
 
         return Result.success(
                 fileInfoService.saveFileInfo(fileInfo)
@@ -82,7 +81,7 @@ public class FileInfoController {
 
         FileInfo fileInfo = fileInfoService.getById(id);
 
-        String url = minioService.getPreviewUrl(
+        String url = minioServiceImpl.getPreviewUrl(
                 fileInfo.getObjectKey(),
                 fileInfo.getContentType()
         );

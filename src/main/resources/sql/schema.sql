@@ -1,12 +1,5 @@
 USE netdisk;
 
--- 用户表
-CREATE TABLE IF NOT EXISTS users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(100) NOT NULL
-);
-
 -- 文件信息表
 CREATE TABLE IF NOT EXISTS file_info (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -22,6 +15,7 @@ CREATE TABLE IF NOT EXISTS file_info (
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 真-文件信息表
 create table if not exists disk_item (
     id bigint auto_increment primary key comment '资源ID',
 
@@ -90,7 +84,7 @@ create table if not exists recent_access (
 );
 
 -- 用户表
-create table sys_user (
+create table if not exists sys_user (
     id bigint primary key auto_increment,
     username varchar(50) not null unique,
     password varchar(100) not null,
@@ -101,7 +95,7 @@ create table sys_user (
 );
 
 -- 角色表
-create table sys_role (
+create table if not exists sys_role (
     id bigint primary key auto_increment,
     role_name varchar(50) not null unique,
     role_code varchar(50) not null unique,
@@ -110,7 +104,7 @@ create table sys_role (
 );
 
 -- 权限表
-create table sys_permission (
+create table if not exists sys_permission (
     id bigint primary key auto_increment,
     permission_name varchar(100) not null,
     permission_code varchar(100) not null unique,
@@ -122,14 +116,14 @@ create table sys_permission (
 );
 
 -- 用户角色表
-create table sys_user_role (
+create table if not exists sys_user_role (
     user_id bigint not null,
     role_id bigint not null,
     primary key (user_id, role_id)
 );
 
 -- 角色权限表
-create table sys_role_permission (
+create table if not exists sys_role_permission (
     role_id bigint not null,
     permission_id bigint not null,
     primary key (role_id, permission_id)

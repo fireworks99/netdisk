@@ -8,7 +8,8 @@ import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.dto.DiskItem.BatchOperateRequest;
 import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
-import com.example.netdisk.service.MinioService;
+import com.example.netdisk.security.utils.SecurityUtils;
+import com.example.netdisk.service.impl.MinioServiceImpl;
 import com.example.netdisk.service.RecentService;
 import com.example.netdisk.service.impl.DiskItemServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 网盘
+ * 我的网盘
  */
 @RestController
 @RequestMapping("/disk")
@@ -27,14 +28,13 @@ import java.util.List;
 public class DiskItemController {
 
     private final DiskItemServiceImpl diskItemService;
-    private final MinioService minioService;
+    private final MinioServiceImpl minioServiceImpl;
 
     private final RecentService recentService;
 
     // 获取当前登录用户
     private Long getUserId() {
-        // Todo 从登录态获取
-        return 1L;
+        return SecurityUtils.getUserId();
     }
 
     /**
@@ -60,12 +60,12 @@ public class DiskItemController {
     public Result<UploadUrlResponse> getUploadUrl(
             @RequestBody UploadUrlRequest request) throws Exception {
 
-        String objectKey = minioService.buildObjectName(
+        String objectKey = minioServiceImpl.buildObjectName(
                 getUserId(),
                 request.getOriginalName()
         );
 
-        String uploadUrl = minioService.getUploadUrl(
+        String uploadUrl = minioServiceImpl.getUploadUrl(
                 objectKey,
                 request.getContentType()
         );
@@ -75,18 +75,21 @@ public class DiskItemController {
         );
     }
 
+    /**
+     * 批量获取Minio上传URL
+     */
     @PostMapping("/batch/upload-url")
     public Result<List<UploadUrlResponse>> getBatchUploadUrl(
             @RequestBody List<UploadUrlRequest> requests) throws Exception{
 
         List<UploadUrlResponse> list = new ArrayList<>();
         for(UploadUrlRequest request: requests) {
-            String objectKey = minioService.buildObjectName(
+            String objectKey = minioServiceImpl.buildObjectName(
                     getUserId(),
                     request.getOriginalName()
             );
 
-            String uploadUrl = minioService.getUploadUrl(
+            String uploadUrl = minioServiceImpl.getUploadUrl(
                     objectKey,
                     request.getContentType()
             );
@@ -104,17 +107,21 @@ public class DiskItemController {
     public Result<DiskItem> saveFile(@RequestBody DiskItem item) {
         item.setOwnerId(getUserId());
 
-        recentService.record(getUserId(), item.getId(), "upload");
+        // 这里存在外键依赖
+//        recentService.record(getUserId(), item.getId(), "upload");
 
         return Result.success(diskItemService.saveFile(item));
     }
 
+    /**
+     * 批量保存文件信息
+     */
     @PostMapping("/batch/file")
     public Result<List<DiskItem>> batchSaveFile(@RequestBody List<DiskItem> items) {
 
         for(DiskItem item: items) {
             item.setOwnerId(getUserId());
-            recentService.record(getUserId(), item.getId(), "upload");
+//            recentService.record(getUserId(), item.getId(), "upload");
         }
 
         return Result.success(diskItemService.batchSaveFile(items));
@@ -169,7 +176,7 @@ public class DiskItemController {
 
         recentService.record(getUserId(), item.getId(), "preview");
 
-        return Result.success(minioService.getPreviewUrl(item.getObjectKey(), item.getContentType()));
+        return Result.success(minioServiceImpl.getPreviewUrl(item.getObjectKey(), item.getContentType()));
     }
 
     /**

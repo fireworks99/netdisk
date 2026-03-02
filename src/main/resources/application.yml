@@ -38,7 +38,7 @@ spring:
       schema-locations: classpath:sql/schema.sql
 
       # 预置数据脚本（目前暂不启用）
-      # data-locations: classpath:sql/data.sql
+      data-locations: classpath:sql/data.sql
 
       # SQL 文件编码
       encoding: UTF-8
@@ -50,7 +50,7 @@ spring:
 mybatis:
   # Mapper XML 文件扫描路径
   # 之前报错：
-  # Invalid bound statement (not found): com.example.netdisk.mapper.UserMapper.findAll
+  # Invalid bound statement (not found): com.example.netdisk.mapper.SysUserMapper.findAll
   # 原因：mapper-locations 配置错误（原来是 mappers）
   mapper-locations: classpath:mapper/*xml
 
@@ -75,3 +75,8 @@ disk:
   recycle:
     expire-days: 30        # 回收站保留天数 N
     cron: "0 37 15 * * ?"    # 清理任务执行时间（每天凌晨 3 点）
+
+
+
+jwt:
+  secret: "in6ooQiR987mLbUl36PAGAnay4spRq475p8tc3Aspv8=" #在终端通过openssl rand -base64 32命令随机生成一个
