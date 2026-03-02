@@ -36,4 +36,16 @@
         DELETE FROM sys_role WHERE id = #{id}
     </delete>
 
+    <select id="pageQuery" resultMap="SysRoleResultMap">
+        select *
+        from sys_role
+        order by create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="countQuery" resultType="long">
+        select count(*)
+        from sys_role
+    </select>
+
 </mapper>

@@ -1,5 +1,7 @@
 package com.example.netdisk.controller;
 
+import com.example.netdisk.common.PageResult;
+import com.example.netdisk.common.Result;
 import com.example.netdisk.entity.SysPermission;
 import com.example.netdisk.service.SysPermissionService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,14 @@ public class SysPermissionController {
     @GetMapping
     public List<SysPermission> list() {
         return permissionService.list();
+    }
+
+    /**
+     * 分页查询权限
+     */
+    @GetMapping("/page")
+    public Result<PageResult<SysPermission>> page(@RequestParam int pageNum, @RequestParam int pageSize) {
+        return Result.success(permissionService.page(pageNum, pageSize));
     }
 
 }

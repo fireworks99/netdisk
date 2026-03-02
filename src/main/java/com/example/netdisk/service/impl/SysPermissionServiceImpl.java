@@ -1,5 +1,6 @@
 package com.example.netdisk.service.impl;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysPermission;
 import com.example.netdisk.mapper.SysPermissionMapper;
 import com.example.netdisk.service.SysPermissionService;
@@ -29,5 +30,16 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Override
     public List<SysPermission> list() {
         return permissionMapper.findAll();
+    }
+
+    @Override
+    public PageResult<SysPermission> page(int pageNum, int pageSize) {
+
+        int offset = (pageNum - 1) * pageSize;
+
+        List<SysPermission> list = permissionMapper.pageQuery(offset, pageSize);
+        Long total = permissionMapper.countQuery();
+
+        return new PageResult<>(total, list);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.netdisk.service.impl;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysUser;
 import com.example.netdisk.mapper.SysUserMapper;
 import com.example.netdisk.mapper.SysUserRoleMapper;
@@ -78,5 +79,15 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public List<String> findPermsByUserId(Long userId) {
         return userMapper.findPermsByUserId(userId);
+    }
+
+    @Override
+    public PageResult<SysUser> page(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+
+        List<SysUser> list = userMapper.pageQuery(offset, pageSize);
+        long total = userMapper.countQuery();
+
+        return new PageResult<>(total, list);
     }
 }

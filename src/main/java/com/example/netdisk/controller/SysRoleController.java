@@ -1,5 +1,7 @@
 package com.example.netdisk.controller;
 
+import com.example.netdisk.common.PageResult;
+import com.example.netdisk.common.Result;
 import com.example.netdisk.dto.Role.RoleCreateDTO;
 import com.example.netdisk.entity.SysRole;
 import com.example.netdisk.service.SysRoleService;
@@ -52,6 +54,14 @@ public class SysRoleController {
     @GetMapping
     public List<SysRole> list() {
         return roleService.list();
+    }
+
+    /**
+     * 分页查询角色
+     */
+    @GetMapping("/page")
+    public Result<PageResult<SysRole>> page(@RequestParam int pageNum, @RequestParam int pageSize) {
+        return Result.success(roleService.page(pageNum, pageSize));
     }
 
 }

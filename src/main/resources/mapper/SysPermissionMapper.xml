@@ -39,4 +39,16 @@
         DELETE FROM sys_permission WHERE id = #{id}
     </delete>
 
+    <select id="pageQuery" resultMap="SysPermissionResultMap">
+        select *
+        from sys_permission
+        order by create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="countQuery" resultType="long">
+        select count(*)
+        from sys_permission
+    </select>
+
 </mapper>

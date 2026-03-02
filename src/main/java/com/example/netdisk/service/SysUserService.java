@@ -1,5 +1,6 @@
 package com.example.netdisk.service;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysUser;
 
 import java.util.List;
@@ -23,5 +24,7 @@ public interface SysUserService {
     List<String> findRolesByUserId(Long userId);
 
     List<String> findPermsByUserId(Long userId);
+
+    PageResult<SysUser> page(int pageNum, int pageSize);
 
 }

@@ -1,5 +1,6 @@
 package com.example.netdisk.service;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysRole;
 
 import java.util.List;
@@ -13,5 +14,7 @@ public interface SysRoleService {
     void assignPermissions(Long roleId, List<Long> permIds);
 
     List<SysRole> list();
+
+    PageResult<SysRole> page(int pageNum, int pageSize);
 
 }

@@ -1,5 +1,7 @@
 package com.example.netdisk.controller;
 
+import com.example.netdisk.common.PageResult;
+import com.example.netdisk.common.Result;
 import com.example.netdisk.dto.User.UserCreateDTO;
 import com.example.netdisk.entity.SysUser;
 import com.example.netdisk.service.SysUserService;
@@ -55,5 +57,13 @@ public class SysUserController {
     @GetMapping
     public List<SysUser> list() {
         return userService.list();
+    }
+
+    /**
+     * 分页查询用户
+     */
+    @GetMapping("/page")
+    public Result<PageResult<SysUser>> page(@RequestParam int pageNum, @RequestParam int pageSize) {
+        return Result.success(userService.page(pageNum, pageSize));
     }
 }

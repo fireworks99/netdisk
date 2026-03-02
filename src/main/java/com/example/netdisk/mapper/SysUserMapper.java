@@ -1,6 +1,7 @@
 package com.example.netdisk.mapper;
 
 import com.example.netdisk.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +20,9 @@ public interface SysUserMapper {
     SysUser findById(Long userId);
 
     List<SysUser> findAll();
+
+    List<SysUser> pageQuery(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize);
+
+    Long countQuery();
 
 }

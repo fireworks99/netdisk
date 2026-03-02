@@ -1,5 +1,6 @@
 package com.example.netdisk.service.impl;
 
+import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysRole;
 import com.example.netdisk.mapper.SysRoleMapper;
 import com.example.netdisk.mapper.SysRolePermissionMapper;
@@ -58,5 +59,15 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public List<SysRole> list() {
         return roleMapper.findAll();
+    }
+
+    @Override
+    public PageResult<SysRole> page(int pageNum, int pageSize) {
+        int offset = (pageNum - 1) * pageSize;
+
+        List<SysRole> list = roleMapper.pageQuery(offset, pageSize);
+        long total = roleMapper.countQuery();
+
+        return new PageResult<>(total, list);
     }
 }

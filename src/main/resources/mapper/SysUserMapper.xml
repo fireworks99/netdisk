@@ -58,4 +58,17 @@
         select * from sys_user
     </select>
 
+    <select id="pageQuery" resultMap="SysUserResultMap">
+        select *
+        from sys_user
+        order by create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="countQuery" resultType="long">
+        select count(*)
+        from sys_user
+    </select>
+
+
 </mapper>
