@@ -8,7 +8,7 @@ import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.dto.DiskItem.BatchOperateRequest;
 import com.example.netdisk.entity.DiskItem;
 import com.example.netdisk.exception.BusinessException;
-import com.example.netdisk.security.utils.SecurityUtils;
+import com.example.netdisk.service.SysUserService;
 import com.example.netdisk.service.impl.MinioServiceImpl;
 import com.example.netdisk.service.RecentService;
 import com.example.netdisk.service.impl.DiskItemServiceImpl;
@@ -29,12 +29,12 @@ public class DiskItemController {
 
     private final DiskItemServiceImpl diskItemService;
     private final MinioServiceImpl minioServiceImpl;
-
     private final RecentService recentService;
+    private final SysUserService userService;
 
     // 获取当前登录用户
     private Long getUserId() {
-        return SecurityUtils.getUserId();
+        return userService.getUserId();
     }
 
     /**

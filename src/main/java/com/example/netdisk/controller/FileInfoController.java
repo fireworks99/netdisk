@@ -4,9 +4,10 @@ import com.example.netdisk.common.Result;
 import com.example.netdisk.dto.FileInfo.UploadUrlRequest;
 import com.example.netdisk.dto.FileInfo.UploadUrlResponse;
 import com.example.netdisk.entity.FileInfo;
-import com.example.netdisk.security.utils.SecurityUtils;
 import com.example.netdisk.service.FileInfoService;
+import com.example.netdisk.service.SysUserService;
 import com.example.netdisk.service.impl.MinioServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,16 +17,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/file")
+@RequiredArgsConstructor
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
     private final MinioServiceImpl minioServiceImpl;
-
-    public FileInfoController(FileInfoService fileInfoService,
-                              MinioServiceImpl minioServiceImpl) {
-        this.fileInfoService = fileInfoService;
-        this.minioServiceImpl = minioServiceImpl;
-    }
+    private final SysUserService userService;
 
     /**
      * 获取 MinIO 预签名上传 URL（前端直传）
@@ -34,7 +31,7 @@ public class FileInfoController {
     public Result<UploadUrlResponse> getUploadUrl(
             @RequestBody UploadUrlRequest request) throws Exception {
 
-        Long userId = SecurityUtils.getUserId();;
+        Long userId = userService.getUserId();;
 
         String objectKey = minioServiceImpl.buildObjectName(
                 userId,
@@ -58,7 +55,7 @@ public class FileInfoController {
     public Result<FileInfo> saveFileInfo(
             @RequestBody FileInfo fileInfo) {
 
-        fileInfo.setUploaderId(SecurityUtils.getUserId());
+        fileInfo.setUploaderId(userService.getUserId());
 
         return Result.success(
                 fileInfoService.saveFileInfo(fileInfo)

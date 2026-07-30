@@ -3,8 +3,8 @@ package com.example.netdisk.controller;
 import com.example.netdisk.common.PageResult;
 import com.example.netdisk.common.Result;
 import com.example.netdisk.entity.DiskItem;
-import com.example.netdisk.security.utils.SecurityUtils;
 import com.example.netdisk.service.RecentService;
+import com.example.netdisk.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class RecentController {
 
     private final RecentService recentService;
+    private final SysUserService userService;
 
     private Long getUserId() {
-        return SecurityUtils.getUserId();
+        return userService.getUserId();
     }
 
     /**

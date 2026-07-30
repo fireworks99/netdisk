@@ -2,10 +2,14 @@ package com.example.netdisk.service.impl;
 
 import com.example.netdisk.common.PageResult;
 import com.example.netdisk.entity.SysUser;
+import com.example.netdisk.exception.BusinessException;
 import com.example.netdisk.mapper.SysUserMapper;
 import com.example.netdisk.mapper.SysUserRoleMapper;
 import com.example.netdisk.service.SysUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,5 +93,21 @@ public class SysUserServiceImpl implements SysUserService {
         long total = userMapper.countQuery();
 
         return new PageResult<>(total, list);
+    }
+
+    @Override
+    public Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null) { return null; }
+
+        try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            SysUser user = userMapper.findUserByUsername(username);
+            return user.getId();
+        } catch (Exception e) {
+            throw new BusinessException(403, "用户未登录");
+        }
     }
 }

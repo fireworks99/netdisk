@@ -1,14 +1,12 @@
 package com.example.netdisk.security.filter;
 
 import com.example.netdisk.security.jwt.JwtUtil;
-import com.example.netdisk.vo.LoginUserVO;
-import io.jsonwebtoken.Claims;
+import com.example.netdisk.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,8 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * OncePerRequestFilter：确保在一个外部请求的处理过程中，本过滤器只会被执行一次。
@@ -29,6 +25,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -38,15 +35,11 @@ public class JwtFilter extends OncePerRequestFilter {
         if(header != null && header.startsWith("Bearer ")) {
 
             String token = header.substring(7);
-
-            Long userId = jwtUtil.getUserId(token);
             String username = jwtUtil.getUserName(token);
-            List<String> roles = jwtUtil.getRoles(token);
-            List<String> perms = jwtUtil.getPerms(token);
 
-            LoginUserVO loginUser = new LoginUserVO(userId, username, roles, perms);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(loginUser, null, null);
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             // 将认证信息绑定到当前线程的上下文中
             SecurityContextHolder.getContext().setAuthentication(auth);
