@@ -27,4 +27,6 @@ public interface SysUserService {
 
     PageResult<SysUser> page(int pageNum, int pageSize);
 
+    public Long getUserId();
+
 }

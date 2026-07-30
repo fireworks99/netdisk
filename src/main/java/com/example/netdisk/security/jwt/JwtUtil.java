@@ -35,7 +35,7 @@ public class JwtUtil {
      * 签发令牌（登录成功后的"通行证"）
      * 服务器确认了你的身份（username），现在给你签发一个带有效期的加密令牌，以后你拿着这个令牌来访问，就不用再重复登录了。
      */
-    public String generateToken(Long userId, String username, List<String> roles, List<String> perms) {
+    public String generateToken(String username) {
         return Jwts.builder()// 1. 创建JWT
 
                 // 标准字段
@@ -44,9 +44,7 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + 7200_000))// 3. 设置过期时间：令牌有效期2小时
 
                 // 自定义字段
-                .claim("uid", userId)
-                .claim("roles", roles)
-                .claim("perms", perms)
+//                .claim("uid", userId)
 
                 .signWith(key)// 4. 签名加密：用服务器的密钥对令牌进行签名，防止被篡改
                 .compact();// 5. 压缩成最终字符串（例如：eyJhbGciOiJIUzI1NiJ9.eyJz...4qd7...）
@@ -56,15 +54,6 @@ public class JwtUtil {
      * 解析验证令牌，获取用户名
      * 客户端拿着令牌来访问了，我要验证这个令牌是不是我签发的、有没有被篡改、有没有过期。如果一切正常，取出里面的用户名，确认是谁在访问。
      */
-//    public String getUserName(String token) {
-//        return Jwts.parser()// 1. 创建解析器
-//                .verifyWith(key)// 2. 设置验证所用密钥（告诉解析器用哪个密钥来验证签名）
-//                .build()// 3. 构建解析器
-//                .parseSignedClaims(token) // 4. 解析并验证JWT
-//                .getPayload()// 5. 获取载荷（Claims对象）
-//                .getSubject();// 6. 获取主题（用户名）
-//    }
-
     public Claims parseToken(String token) {
 
         return Jwts.parser()
@@ -78,19 +67,9 @@ public class JwtUtil {
         return parseToken(token).getSubject();
     }
 
-    public Long getUserId(String token) {
-        return parseToken(token).get("uid", Long.class);
-    }
-
-    @SuppressWarnings("unchecked")//这个注解：别警告我了，我知道这里有类型安全问题，但我保证没问题
-    public List<String> getRoles(String token) {
-        return parseToken(token).get("roles", List.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<String> getPerms(String token) {
-        return parseToken(token).get("perms", List.class);
-    }
+//    public Long getUserId(String token) {
+//        return parseToken(token).get("uid", Long.class);
+//    }
 
     public Date getExpiration(String token) {
         return parseToken(token).getExpiration();

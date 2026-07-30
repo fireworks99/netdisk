@@ -1,9 +1,9 @@
 package com.example.netdisk.vo;
 
-import com.example.netdisk.entity.SysUser;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class LoginVO {
@@ -14,5 +14,7 @@ public class LoginVO {
     private Boolean status;
     private String token;
     private Date expiration;
+    private List<String> roles;
+    private List<String> perms;
 
 }

@@ -63,6 +63,7 @@ public class SysUserController {
      * 分页查询用户
      */
     @GetMapping("/page")
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<PageResult<SysUser>> page(@RequestParam int pageNum, @RequestParam int pageSize) {
         return Result.success(userService.page(pageNum, pageSize));
     }
