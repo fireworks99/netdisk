@@ -76,7 +76,10 @@ disk:
     expire-days: 30        # 回收站保留天数 N
     cron: "0 37 15 * * ?"    # 清理任务执行时间（每天凌晨 3 点）
 
-
+#logging:
+#  level:
+#    org.springframework.web.cors: TRACE
+#    org.springframework.security: TRACE
 
 jwt:
   secret: "in6ooQiR987mLbUl36PAGAnay4spRq475p8tc3Aspv8=" #在终端通过openssl rand -base64 32命令随机生成一个

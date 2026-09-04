@@ -1,13 +1,11 @@
 package com.example.netdisk.security.config;
 
 import com.example.netdisk.security.filter.JwtFilter;
-import com.example.netdisk.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 /**
  * 这个 SecurityConfig 类是 Spring Security 的核心配置类
@@ -56,6 +60,24 @@ public class SecurityConfig {
 //        return provider;
 //    }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
+        corsConfiguration.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        //暴露响应头，前端才能在headers中拿到文件名
+        corsConfiguration.setExposedHeaders(Arrays.asList("Content-Disposition"));
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource url = new UrlBasedCorsConfigurationSource();
+        url.registerCorsConfiguration("/**", corsConfiguration);
+        return url;
+    }
+
     /**
      * Bean注解：将当前方法的返回值注册为一个 Bean（一个由 Spring 管理的对象）
      * JWT认证方式，必须自定义SecurityFilterChain来跳过默认的 (Session认证)
@@ -65,7 +87,26 @@ public class SecurityConfig {
 
         http
                 .csrf().disable()// 关闭CSRF保护：JWT认证通常用于REST API，且JWT存在浏览器LocalStorage中，CSRF防护与无状态API不兼容
+
+                .cors()
+                .and()
+
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)// 设置无状态会话
+
+                .and()
+                .exceptionHandling()// 异常处理
+                // 未登录 / JWT 无效 -> 401
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=utf-8");
+                    response.getWriter().write( "{\"code\":401,\"msg\":\"未登录或登录已过期\"}");
+                })
+                // 已登录，但是没有权限 → 403
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json;charset=utf-8");
+                    response.getWriter().write("{\"code\":403,\"msg\":\"当前操作没有权限\"}");
+                })
 
                 .and()//返回 HttpSecurity
                 .authorizeRequests()// 开始配置URL授权（新版可能用 authorizeHttpRequests）
